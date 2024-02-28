@@ -10,9 +10,20 @@ if __name__ == '__main__':
     from selenium.common import NoSuchElementException
     from selenium.webdriver.support.wait import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
+    import sys
     import random
     import time
     import csv
+    
+    # Get args from command line
+    if len(sys.argv) < 3:
+        print(f"Missing {3-len(sys.argv)} arguments")
+        print("scraper.py url pages_to_scrape csv_file_path")
+        sys.exit()
+    else:
+        url = sys.argv[0]
+        pages_to_scrape = sys.argv[1]
+        csv_file_path = sys.argv[2]
     
     # set up a controllable Chrome instance
     # in headless mode
@@ -21,7 +32,6 @@ if __name__ == '__main__':
     driver = webdriver.Firefox(service=Service(), options=options)
     
     # open the target page  in the browser
-    url = "https://www.indeed.com/jobs?q=Artificial+intelligence&l=United+States&vjk=7628935bda18d9dc"
     driver.get(url)
     # set the window size to make sure pages
     # will not be rendered in responsive mode
@@ -30,9 +40,8 @@ if __name__ == '__main__':
     # a data structure where to store the job openings
     # scraped from the page
     jobs = []
-    
     pages_scraped = 0
-    pages_to_scrape = 20
+    
     while pages_scraped < pages_to_scrape:
         print("Scraping page...")
         # select the job posting cards on the page
@@ -145,10 +154,9 @@ if __name__ == '__main__':
     driver.quit()
     
     # Output
-    csv_file_path = "jobs.csv"
     fieldnames = ["title", "company_name", "location", "pay", "job_type", "description"]
     
-    with open(csv_file_path, mode='a', newline='', encoding='utf-8') as file:
+    with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
     

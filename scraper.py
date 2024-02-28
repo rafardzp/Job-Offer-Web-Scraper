@@ -16,14 +16,14 @@ if __name__ == '__main__':
     import csv
     
     # Get args from command line
-    if len(sys.argv) < 3:
-        print(f"Missing {3-len(sys.argv)} arguments")
+    if len(sys.argv) < 4:
+        print(f"Missing {4-len(sys.argv)} arguments")
         print("scraper.py url pages_to_scrape csv_file_path")
         sys.exit()
     else:
-        url = sys.argv[0]
-        pages_to_scrape = sys.argv[1]
-        csv_file_path = sys.argv[2]
+        url = str(sys.argv[1])
+        pages_to_scrape = int(sys.argv[2])
+        csv_file_path = str(sys.argv[3])
     
     # set up a controllable Chrome instance
     # in headless mode

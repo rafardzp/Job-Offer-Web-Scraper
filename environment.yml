@@ -1,0 +1,7 @@
+name: scraper_env
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - selenium=4.1.0
+  - webdriver-manager=3.5.0

@@ -117,14 +117,10 @@ if __name__ == '__main__':
                 if 'Sueldo' in job_details_section:
                     idx = job_details_section.index('Sueldo')
                     pay = job_details_section[idx+1]
-                else:
-                    pay = None
                     
                 if 'Tipo de empleo' in job_details_section:
                     idx = job_details_section.index('Tipo de empleo')
                     job_type = job_details_section[idx+1]
-                else:
-                    job_type = 'not specified'
 
             # Job description
             try:
@@ -134,6 +130,9 @@ if __name__ == '__main__':
                 pass
     
             # store the scraped data
+            if job_type is None:
+                job_type = 'not specified'
+                
             job["title"] = title
             job["company_name"] = company_name
             job["location"] = location

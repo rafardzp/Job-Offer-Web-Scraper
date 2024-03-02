@@ -18,7 +18,7 @@ To run the script, install the [Anaconda](https://www.anaconda.com/) environment
 
 `conda activate scraper_env`
 
-`python scraper.py url pages_to_scrape csv_file_path`
+`python scraper.py url pages_to_scrape csv_file_path [discard_non_pay=True]`
 
 NOTES: 
 

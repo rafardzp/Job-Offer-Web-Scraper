@@ -12,6 +12,8 @@ Simple US Indeed job offer web scraper for a Natural Language Processing project
 
 To run the script, install the [Anaconda](https://www.anaconda.com/) environment provided in the `environment.yml` file and, from the Anaconda prompt, run:
 
+`conda config --add channels conda-forge`
+
 `conda env create -f environment.yml`
 
 `conda activate scraper_env`

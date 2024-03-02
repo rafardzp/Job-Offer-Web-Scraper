@@ -20,7 +20,7 @@ To run the script, install the [Anaconda](https://www.anaconda.com/) environment
 
 NOTES: 
 
-1. You might need to adjust the HTML parser depending on your location or wesite language. The scraper provided here is adapted to spanish.
+1. You might need to adjust the HTML parser depending on your location or website language. The scraper provided here is adapted to spanish.
 2. The URL must be passed as a string.
 
 ---

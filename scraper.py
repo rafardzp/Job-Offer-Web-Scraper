@@ -16,14 +16,16 @@ if __name__ == '__main__':
     import csv
     
     # Get args from command line
+    discard_non_pay = True
     if len(sys.argv) < 4:
         print(f"Missing {4-len(sys.argv)} arguments")
-        print("scraper.py url pages_to_scrape csv_file_path")
+        print("scraper.py url pages_to_scrape csv_file_path [discard_non_pay]")
         sys.exit()
     else:
         url = str(sys.argv[1])
         pages_to_scrape = int(sys.argv[2])
         csv_file_path = str(sys.argv[3])
+        discard_non_pay = bool(sys.argv[4])
     
     # set up a controllable Chrome instance
     # in headless mode
@@ -33,12 +35,10 @@ if __name__ == '__main__':
     
     # open the target page  in the browser
     driver.get(url)
-    # set the window size to make sure pages
-    # will not be rendered in responsive mode
+    # set the window size to make sure pages will not be rendered in responsive mode
     driver.set_window_size(1366, 768)
     
-    # a data structure where to store the job openings
-    # scraped from the page
+    # a data structure where to store the job openings scraped from the page
     jobs = []
     pages_scraped = 0
     
@@ -89,15 +89,16 @@ if __name__ == '__main__':
             # extract the job details
             job_details_element = driver.find_element(By.CSS_SELECTOR, ".jobsearch-RightPane")
     
+            # Comapny name
             try:
                 company_link_element = job_details_element.find_element(By.CSS_SELECTOR, "div[data-company-name='true'] a")
                 company_name = company_link_element.text
             except NoSuchElementException:
                 pass
-    
+
+            # Company location
             try:
-                company_location_element = job_details_element.find_element(By.CSS_SELECTOR,
-                                                                            "[data-testid='inlineHeader-companyLocation']")
+                company_location_element = job_details_element.find_element(By.CSS_SELECTOR, "[data-testid='inlineHeader-companyLocation']")
                 company_location_element_text = company_location_element.text
                 location = company_location_element_text
     
@@ -107,7 +108,8 @@ if __name__ == '__main__':
                     location_type = company_location_element_text_array[1]
             except NoSuchElementException:
                 pass
-    
+
+            # Pay and job type
             for div in job_details_element.find_elements(By.CSS_SELECTOR, "#jobDetailsSection"):
                 div_text = div.text
                 job_details_section = div_text.split('\n')
@@ -115,11 +117,16 @@ if __name__ == '__main__':
                 if 'Sueldo' in job_details_section:
                     idx = job_details_section.index('Sueldo')
                     pay = job_details_section[idx+1]
+                else:
+                    pay = None
                     
                 if 'Tipo de empleo' in job_details_section:
                     idx = job_details_section.index('Tipo de empleo')
                     job_type = job_details_section[idx+1]
-                    
+                else:
+                    job_type = None
+
+            # Job description
             try:
                 description_element = job_details_element.find_element(By.ID, "jobDescriptionText")
                 description = description_element.text
@@ -133,24 +140,24 @@ if __name__ == '__main__':
             job["pay"] = pay
             job["job_type"] = job_type
             job["description"] = description
-            jobs.append(job)
+
+            if (discard_non_pay and job["pay"]!=None) or not discard_non_pay: # Discard no pay if needed
+                jobs.append(job)
     
-            # wait for a random number of seconds from 1 to 5
-            # to avoid rate limiting blocks
+            # wait for a random number of seconds from 1 to 5 to avoid rate limiting blocks
             time.sleep(random.uniform(1, 5))
     
-        # increment the scraping counter
+        # Increment the scraping counter
         pages_scraped += 1
     
-        # if this is not the last page, go to the next page
-        # otherwise, break the while loop
+        # If this is not the last page, go to the next page otherwise, break the while loop
         try:
             next_page_element = driver.find_element(By.CSS_SELECTOR, "a[data-testid=pagination-page-next]")
             next_page_element.click()
         except NoSuchElementException:
             break
     
-    # close the browser and free up the resources
+    # Close the browser and free up the resources
     driver.quit()
     
     # Output

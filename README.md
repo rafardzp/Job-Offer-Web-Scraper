@@ -1,6 +1,6 @@
 # **Job Offer Web Scraper**
 
-Simple US Indeed job offer web scraper for an NLP project, we target:
+Simple US Indeed job offer web scraper for a Natural Language Processing project, we target:
 1. Job title.
 2. Company name.
 3. Location.

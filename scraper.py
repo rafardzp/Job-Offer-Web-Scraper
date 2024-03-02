@@ -124,7 +124,7 @@ if __name__ == '__main__':
                     idx = job_details_section.index('Tipo de empleo')
                     job_type = job_details_section[idx+1]
                 else:
-                    job_type = None
+                    job_type = 'not specified'
 
             # Job description
             try:

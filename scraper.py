@@ -122,6 +122,16 @@ if __name__ == '__main__':
                     idx = job_details_section.index('Tipo de empleo')
                     job_type = job_details_section[idx+1]
 
+            # Try another option for pay
+            if pay is None:
+                aux_salary_elements = job_details_element.find_elements(By.ID, "salaryInfoAndJobType")
+                for aux_salary_element in aux_salary_elements:
+                    salary_spans = aux_salary_element.find_elements(By.TAG_NAME, "span")
+                    for span in salary_spans:
+                        if "$" in span.text:
+                            pay = span.text
+                            break
+                    
             # Job description
             try:
                 description_element = job_details_element.find_element(By.ID, "jobDescriptionText")

@@ -43,10 +43,10 @@ if __name__ == '__main__':
     pages_scraped = 0
     
     while pages_scraped < pages_to_scrape:
-        print("Scraping page...")
+        print(f"Scraping page {pages_scraped} - ", end=" ")
         # select the job posting cards on the page
         job_cards = driver.find_elements(By.CSS_SELECTOR, ".cardOutline")
-    
+
         for job_card in job_cards:
             # initialize a dictionary to store the scraped job data
             job = {}
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 close_button.click()
             except NoSuchElementException:
                 pass
-            
+
             # close the cookie dialog
             try:
                 cookie_dialog = driver.find_element(By.CSS_SELECTOR, "#CookiePrivacyNotice")
@@ -74,7 +74,7 @@ if __name__ == '__main__':
                 close_button.click()
             except NoSuchElementException:
                 pass
-    
+            
             # load the job details card
             job_card.click()
     
@@ -85,7 +85,7 @@ if __name__ == '__main__':
                 title = title_element.text.replace("\n- job post", "")
             except NoSuchElementException:
                 continue
-    
+
             # extract the job details
             job_details_element = driver.find_element(By.CSS_SELECTOR, ".jobsearch-RightPane")
     
@@ -148,6 +148,7 @@ if __name__ == '__main__':
     
         # Increment the scraping counter
         pages_scraped += 1
+        print("Finished", end="\n")
     
         # If this is not the last page, go to the next page otherwise, break the while loop
         try:

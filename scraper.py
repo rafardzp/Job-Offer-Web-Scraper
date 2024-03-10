@@ -2,19 +2,30 @@
 Code is based on: https://brightdata.com/blog/how-tos/how-to-scrape-job-postings
 '''
 
-if __name__ == '__main__':
-    from selenium import webdriver
-    from selenium.webdriver.firefox.options import Options
-    from selenium.webdriver.firefox.service import Service
-    from selenium.webdriver.common.by import By
-    from selenium.common import NoSuchElementException
-    from selenium.webdriver.support.wait import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
-    import sys
-    import random
-    import time
-    import csv
-    
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.common.by import By
+from selenium.common import NoSuchElementException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
+import sys
+import random
+import time
+import csv
+
+def find_elements_with_retry(driver, by, selector, max_retry=3):
+    retries = 0
+    while retries < max_retry:
+        try:
+            elements = driver.find_elements(by, selector)
+            return elements
+        except StaleElementReferenceException:
+            retries += 1
+    return []
+
+if __name__ == '__main__':    
     # Get args from command line
     discard_non_pay = True
     if len(sys.argv) < 4:
@@ -45,7 +56,7 @@ if __name__ == '__main__':
     while pages_scraped < pages_to_scrape:
         print(f"Scraping page {pages_scraped} - ", end=" ")
         # select the job posting cards on the page
-        job_cards = driver.find_elements(By.CSS_SELECTOR, ".cardOutline")
+        job_cards = find_elements_with_retry(driver, By.CSS_SELECTOR, ".cardOutline")
 
         for job_card in job_cards:
             # initialize a dictionary to store the scraped job data
@@ -87,30 +98,30 @@ if __name__ == '__main__':
                 continue
 
             # extract the job details
-            job_details_element = driver.find_element(By.CSS_SELECTOR, ".jobsearch-RightPane")
+            job_details_element = find_elements_with_retry(driver, By.CSS_SELECTOR, ".jobsearch-RightPane")[0]
     
             # Comapny name
             try:
-                company_link_element = job_details_element.find_element(By.CSS_SELECTOR, "div[data-company-name='true'] a")
+                company_link_element = find_elements_with_retry(job_details_element, By.CSS_SELECTOR, "div[data-company-name='true'] a")[0]
                 company_name = company_link_element.text
-            except NoSuchElementException:
+            except IndexError:
                 pass
+
 
             # Company location
             try:
-                company_location_element = job_details_element.find_element(By.CSS_SELECTOR, "[data-testid='inlineHeader-companyLocation']")
+                company_location_element = find_elements_with_retry(job_details_element, By.CSS_SELECTOR, "[data-testid='inlineHeader-companyLocation']")[0]
                 company_location_element_text = company_location_element.text
                 location = company_location_element_text
-    
                 if "•" in company_location_element_text:
                     company_location_element_text_array = company_location_element_text.split("•")
                     location = company_location_element_text_array[0]
                     location_type = company_location_element_text_array[1]
-            except NoSuchElementException:
+            except IndexError:
                 pass
 
             # Pay and job type
-            for div in job_details_element.find_elements(By.CSS_SELECTOR, "#jobDetailsSection"):
+            for div in find_elements_with_retry(job_details_element, By.CSS_SELECTOR, "#jobDetailsSection"):
                 div_text = div.text
                 job_details_section = div_text.split('\n')
                 
@@ -122,19 +133,21 @@ if __name__ == '__main__':
                     idx = job_details_section.index('Tipo de empleo')
                     job_type = job_details_section[idx+1]
 
+
             # Try another option for pay
             if pay is None:
-                aux_salary_elements = job_details_element.find_elements(By.ID, "salaryInfoAndJobType")
+                aux_salary_elements = find_elements_with_retry(job_details_element, By.ID, "salaryInfoAndJobType")
                 for aux_salary_element in aux_salary_elements:
                     salary_spans = aux_salary_element.find_elements(By.TAG_NAME, "span")
                     for span in salary_spans:
                         if "$" in span.text:
                             pay = span.text
                             break
+
                     
             # Job description
             try:
-                description_element = job_details_element.find_element(By.ID, "jobDescriptionText")
+                description_element = find_elements_with_retry(job_details_element, By.ID, "jobDescriptionText")[0]
                 description = description_element.text
             except NoSuchElementException:
                 pass
@@ -162,7 +175,7 @@ if __name__ == '__main__':
     
         # If this is not the last page, go to the next page otherwise, break the while loop
         try:
-            next_page_element = driver.find_element(By.CSS_SELECTOR, "a[data-testid=pagination-page-next]")
+            next_page_element = find_elements_with_retry(driver, By.CSS_SELECTOR, "a[data-testid=pagination-page-next]")[0]
             next_page_element.click()
         except NoSuchElementException:
             break

@@ -15,7 +15,7 @@ import random
 import time
 import csv
 
-def find_elements_with_retry(driver, by, selector, max_retry=3):
+def find_elements_with_retry(driver, by, selector, max_retry=10):
     retries = 0
     while retries < max_retry:
         try:
@@ -72,16 +72,16 @@ if __name__ == '__main__':
     
             # close the anti-scraping modal
             try:
-                dialog_element = driver.find_element(By.CSS_SELECTOR, "[role=dialog]")
-                close_button = dialog_element.find_element(By.CSS_SELECTOR, ".icl-CloseButton")
+                dialog_element = find_elements_with_retry(driver, By.CSS_SELECTOR, "[role=dialog]")[0]
+                close_button = find_elements_with_retry(dialog_element, By.CSS_SELECTOR, ".icl-CloseButton")[0]
                 close_button.click()
             except NoSuchElementException:
                 pass
 
             # close the cookie dialog
             try:
-                cookie_dialog = driver.find_element(By.CSS_SELECTOR, "#CookiePrivacyNotice")
-                close_button = cookie_dialog.find_element(By.CSS_SELECTOR, ".gnav-CookiePrivacyNoticeButton")
+                cookie_dialog = find_elements_with_retry(driver, By.CSS_SELECTOR, "#CookiePrivacyNotice")[0]
+                close_button = find_elements_with_retry(cookie_dialog, By.CSS_SELECTOR, ".gnav-CookiePrivacyNoticeButton")[0]
                 close_button.click()
             except NoSuchElementException:
                 pass

@@ -77,16 +77,16 @@ if __name__ == '__main__':
                     # close the anti-scraping modal
                     if pages_scraped == 0:
                         try:
-                            dialog_element = driver.find_element(By.CSS_SELECTOR, "[role=dialog]")[0]
-                            close_button = dialog_element.find_element(By.CSS_SELECTOR, ".icl-CloseButton")[0]
+                            dialog_element = driver.find_element(By.CSS_SELECTOR, "[role=dialog]")
+                            close_button = dialog_element.find_element(By.CSS_SELECTOR, ".icl-CloseButton")
                             close_button.click()
                         except NoSuchElementException:
                             pass
 
                             # close the cookie dialog
                         try:
-                            cookie_dialog = driver.find_element(By.CSS_SELECTOR, "#CookiePrivacyNotice")[0]
-                            close_button = cookie_dialog.find_element(By.CSS_SELECTOR, ".gnav-CookiePrivacyNoticeButton")[0]
+                            cookie_dialog = driver.find_element(By.CSS_SELECTOR, "#CookiePrivacyNotice")
+                            close_button = cookie_dialog.find_element(By.CSS_SELECTOR, ".gnav-CookiePrivacyNoticeButton")
                             close_button.click()
                         except NoSuchElementException:
                             pass
